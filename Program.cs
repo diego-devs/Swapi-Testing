@@ -18,14 +18,27 @@ namespace Swapi_Testing
             {
                 var content = await result.Content.ReadAsStringAsync();
                 var film = JsonSerializer.Deserialize<Film>(content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
                 Console.WriteLine(film.Title);
                 Console.WriteLine();
                 Console.WriteLine(film.Director);
                 Console.WriteLine();
                 Console.WriteLine(film.Opening_crawl);
                 Console.WriteLine();
-                Console.WriteLine();
+                Console.WriteLine(film.Producer);
 
+                foreach (var character in film.Characters) {
+                    var uri = new Uri(character);
+                    var ans =  await client.GetAsync(uri.AbsolutePath);
+                    if (ans.IsSuccessStatusCode) {
+                        var charAns = await ans.Content.ReadAsStringAsync();
+                        var newCharacter = JsonSerializer.Deserialize<Character>(charAns);
+                        System.Console.WriteLine(newCharacter.name);
+                        System.Console.WriteLine(newCharacter.hair_color);
+                        System.Console.WriteLine();
+
+                    }
+                }
             }
             else
             {
@@ -36,6 +49,11 @@ namespace Swapi_Testing
             //...>
         }
         
+    }
+    public class Character {
+        public string name { get; set; }
+         public string hair_color { get; set; }
+
     }
     public class Film
     {
